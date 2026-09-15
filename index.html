@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: "Playfair Display", "Didot", "Georgia", serif;
+      overflow: hidden;
+    }
+    
+    /* Aesthetic Dirty Pink Glass Card */
+    .glass-card {
+      background: rgba(216, 164, 166, 0.75); /* Soft Dusty / Dirty Pink */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-bottom: 1px solid rgba(138, 90, 93, 0.2);
+      border-right: 1px solid rgba(138, 90, 93, 0.2);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 12px 32px rgba(110, 68, 70, 0.15),
+                  0 2px 6px rgba(110, 68, 70, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Clock Face Container */
+    .clock {
+      width: 140px;
+      height: 140px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hour Tick Lines */
+    .ticks {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    .tick {
+      position: absolute;
+      width: 2px;
+      height: 7px;
+      background: rgba(74, 48, 50, 0.35); /* Soft deep mauve/brown */
+      left: 50%;
+      top: 0;
+      transform-origin: 50% 70px;
+      margin-left: -1px;
+      border-radius: 1px;
+    }
+    .tick.major {
+      width: 2.5px;
+      height: 10px;
+      background: rgba(74, 48, 50, 0.65);
+      margin-left: -1.25px;
+    }
+
+    /* Center Pin */
+    .clock::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 7px;
+      height: 7px;
+      background: #4a3032; /* Deep Muted Rosewood */
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hands */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+      z-index: 5;
+    }
+    
+    .hour {
+      width: 3.5px;
+      height: 36px;
+      background: #4a3032; /* Deep Rosewood */
+      margin-left: -1.75px;
+    }
+    
+    .minute {
+      width: 2.5px;
+      height: 52px;
+      background: #6e4446; /* Warm Taupe-Brown */
+      margin-left: -1.25px;
+    }
+    
+    .second {
+      width: 1.5px;
+      height: 58px;
+      background: #ffffff; /* Crisp Creamy White accent */
+      margin-left: -0.75px;
+      z-index: 6;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+
+    /* Digital Time Inside Clock Dial */
+    .digital {
+      position: absolute;
+      top: 65%; /* Positioned neatly in lower half of the dial */
+      left: 50%;
+      transform: translateX(-50%);
+      color: #3b2426;
+      font-family: "Playfair Display", "Didot", "Georgia", serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      z-index: 4;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="clock">
+      <div class="ticks" id="ticks"></div>
+      <div class="hand hour" id="hr"></div>
+      <div class="hand minute" id="min"></div>
+      <div class="hand second" id="sec"></div>
+      <div class="digital" id="digital"></div>
+    </div>
+  </div>
+
+  <script>
+    // Generate 12 hour tick marks
+    const ticksContainer = document.getElementById('ticks');
+    for (let i = 0; i < 12; i++) {
+      const tick = document.createElement('div');
+      tick.className = i % 3 === 0 ? 'tick major' : 'tick';
+      tick.style.transform = `rotate(${i * 30}deg)`;
+      ticksContainer.appendChild(tick);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+      const ms = now.getMilliseconds();
+      
+      const hrDeg = (h % 12) * 30 + m * 0.5 + (s / 120);
+      const minDeg = m * 6 + (s / 10);
+      const secDeg = s * 6 + (ms * 0.006);
+      
+      document.getElementById('hr').style.transform = `rotate(${hrDeg}deg)`;
+      document.getElementById('min').style.transform = `rotate(${minDeg}deg)`;
+      document.getElementById('sec').style.transform = `rotate(${secDeg}deg)`;
+      
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('digital').innerText = timeString;
+      
+      requestAnimationFrame(updateClock);
+    }
+    
+    requestAnimationFrame(updateClock);
+  </script>
+</body>
+</html>
