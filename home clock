@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Google Font: Inter / Outfit fallback matching Proxima Nova geometry -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+
   <style>
     * {
       box-sizing: border-box;
@@ -13,32 +18,31 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
     }
     
-    /* Light Mode Glassmorphism Card */
+    /* Compact Glass Card - No Drop Shadow */
     .glass-card {
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-      border-right: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 24px;
-      padding: 24px 32px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05),
-                  0 1px 3px rgba(0, 0, 0, 0.03);
+      background: rgba(216, 164, 166, 0.75); /* Default Dirty Pink */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-bottom: 1px solid rgba(138, 90, 93, 0.2);
+      border-right: 1px solid rgba(138, 90, 93, 0.2);
+      border-radius: 20px;
+      padding: 14px 18px;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 6px;
     }
 
-    /* Clock Face Area (No circular border) */
+    /* Scaled Down Clock Face */
     .clock {
-      width: 130px;
-      height: 130px;
+      width: 90px;
+      height: 90px;
       position: relative;
     }
 
@@ -52,21 +56,20 @@
     }
     .tick {
       position: absolute;
-      width: 2px;
-      height: 8px;
-      background: rgba(30, 41, 59, 0.35); /* Slate tick color */
+      width: 1.5px;
+      height: 6px;
+      background: rgba(74, 48, 50, 0.35);
       left: 50%;
       top: 0;
-      transform-origin: 50% 65px; /* Rotates around center of 130px box */
-      margin-left: -1px;
+      transform-origin: 50% 45px;
+      margin-left: -0.75px;
       border-radius: 1px;
     }
-    /* Major hour ticks (12, 3, 6, 9) */
     .tick.major {
-      width: 2.5px;
-      height: 11px;
-      background: rgba(30, 41, 59, 0.7);
-      margin-left: -1.25px;
+      width: 2px;
+      height: 8px;
+      background: rgba(74, 48, 50, 0.65);
+      margin-left: -1px;
     }
 
     /* Center Pin */
@@ -75,13 +78,12 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 8px;
-      height: 8px;
-      background: #1e293b;
+      width: 5px;
+      height: 5px;
+      background: #4a3032;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     /* Hands */
@@ -90,43 +92,44 @@
       bottom: 50%;
       left: 50%;
       transform-origin: bottom center;
-      border-radius: 4px;
+      border-radius: 3px;
       z-index: 5;
     }
     
     .hour {
-      width: 4px;
-      height: 34px;
-      background: #1e293b;
-      margin-left: -2px;
-    }
-    
-    .minute {
       width: 3px;
-      height: 48px;
-      background: #475569;
+      height: 24px;
+      background: #4a3032;
       margin-left: -1.5px;
     }
     
+    .minute {
+      width: 2px;
+      height: 34px;
+      background: #6e4446;
+      margin-left: -1px;
+    }
+    
     .second {
-      width: 1.5px;
-      height: 54px;
-      background: #e11d48;
-      margin-left: -0.75px;
+      width: 1px;
+      height: 38px;
+      background: #ffffff;
+      margin-left: -0.5px;
       z-index: 6;
-      box-shadow: 0 0 6px rgba(225, 29, 72, 0.4);
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
     }
 
-    /* Digital Time Display */
+    /* Digital Time Display - No Border */
     .digital {
-      color: #0f172a;
-      font-size: 15px;
+      color: #3b2426;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.8px;
-      background: rgba(0, 0, 0, 0.04);
-      padding: 5px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 0, 0, 0.06);
+      letter-spacing: 0.6px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 3px 10px;
+      border-radius: 8px;
+      border: none; /* Border removed */
     }
   </style>
 </head>
@@ -142,7 +145,20 @@
   </div>
 
   <script>
-    // Generate 12 hour tick marks programmatically
+    // Read hex color code from URL parameter (?bg=hexcode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgParam = urlParams.get('bg');
+
+    if (bgParam) {
+      const hex = bgParam.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      document.querySelector('.glass-card').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
+    }
+
+    // Generate 12 hour tick marks
     const ticksContainer = document.getElementById('ticks');
     for (let i = 0; i < 12; i++) {
       const tick = document.createElement('div');
