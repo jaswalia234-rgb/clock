@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Google Font: Plus Jakarta Sans -->
+  <!-- Google Font: Outfit (geometric fallback matching Proxima Nova) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -18,31 +18,31 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
     }
     
-    /* Compact Glass Card - No Drop Shadow */
+    /* Slightly Bigger Glass Card - No Drop Shadow */
     .glass-card {
       background: rgba(216, 164, 166, 0.75); /* Default Dirty Pink */
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-bottom: 1px solid rgba(138, 90, 93, 0.2);
       border-right: 1px solid rgba(138, 90, 93, 0.2);
-      border-radius: 20px;
-      padding: 14px 18px; /* Compact padding */
-      box-shadow: none;   /* Removed drop shadow */
+      border-radius: 24px;
+      padding: 16px 20px;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;           /* Tight spacing */
+      gap: 6px;
     }
 
-    /* Scaled Down Clock Face */
+    /* Scaled Up Clock Face (110px) */
     .clock {
-      width: 90px;
-      height: 90px;
+      width: 110px;
+      height: 110px;
       position: relative;
     }
 
@@ -57,17 +57,17 @@
     .tick {
       position: absolute;
       width: 1.5px;
-      height: 6px;
+      height: 7px;
       background: rgba(74, 48, 50, 0.35);
       left: 50%;
       top: 0;
-      transform-origin: 50% 45px;
+      transform-origin: 50% 55px;
       margin-left: -0.75px;
       border-radius: 1px;
     }
     .tick.major {
       width: 2px;
-      height: 8px;
+      height: 9px;
       background: rgba(74, 48, 50, 0.65);
       margin-left: -1px;
     }
@@ -78,15 +78,15 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
       background: #4a3032;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
     }
 
-    /* Hands */
+    /* Proportional Hands */
     .hand {
       position: absolute;
       bottom: 50%;
@@ -98,38 +98,38 @@
     
     .hour {
       width: 3px;
-      height: 24px;
+      height: 30px;
       background: #4a3032;
       margin-left: -1.5px;
     }
     
     .minute {
       width: 2px;
-      height: 34px;
+      height: 42px;
       background: #6e4446;
       margin-left: -1px;
     }
     
     .second {
       width: 1px;
-      height: 38px;
+      height: 46px;
       background: #ffffff;
       margin-left: -0.5px;
       z-index: 6;
       box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
     }
 
-    /* Smaller Digital Time Display */
+    /* Clean Floating Digital Time (13px) */
     .digital {
       color: #3b2426;
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-      font-size: 11px;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.6px;
-      background: rgba(255, 255, 255, 0.3);
-      padding: 3px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.8px;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      border: none;
     }
   </style>
 </head>
