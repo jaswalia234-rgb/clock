@@ -13,36 +13,34 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: "Playfair Display", "Didot", "Georgia", serif;
+      /* Exact Notion Serif Font Stack */
+      font-family: "Lyon-Text", Georgia, YuMincho, "Yu Mincho", "Georgia Pro", Seravek, "Remington Pro", serif;
       overflow: hidden;
     }
     
     /* Aesthetic Dirty Pink Glass Card */
     .glass-card {
-      background: rgba(216, 164, 166, 0.75); /* Soft Dusty / Dirty Pink */
+      background: rgba(216, 164, 166, 0.75); /* Dirty Pink / Dusty Rose */
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-bottom: 1px solid rgba(138, 90, 93, 0.2);
       border-right: 1px solid rgba(138, 90, 93, 0.2);
       border-radius: 28px;
-      padding: 28px;
+      padding: 24px 32px;
       box-shadow: 0 12px 32px rgba(110, 68, 70, 0.15),
                   0 2px 6px rgba(110, 68, 70, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      gap: 16px;
     }
 
     /* Clock Face Container */
     .clock {
-      width: 140px;
-      height: 140px;
+      width: 130px;
+      height: 130px;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     /* Hour Tick Lines */
@@ -57,10 +55,10 @@
       position: absolute;
       width: 2px;
       height: 7px;
-      background: rgba(74, 48, 50, 0.35); /* Soft deep mauve/brown */
+      background: rgba(74, 48, 50, 0.35);
       left: 50%;
       top: 0;
-      transform-origin: 50% 70px;
+      transform-origin: 50% 65px;
       margin-left: -1px;
       border-radius: 1px;
     }
@@ -79,7 +77,7 @@
       left: 50%;
       width: 7px;
       height: 7px;
-      background: #4a3032; /* Deep Muted Rosewood */
+      background: #4a3032;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
@@ -98,42 +96,38 @@
     
     .hour {
       width: 3.5px;
-      height: 36px;
+      height: 34px;
       background: #4a3032; /* Deep Rosewood */
       margin-left: -1.75px;
     }
     
     .minute {
       width: 2.5px;
-      height: 52px;
+      height: 48px;
       background: #6e4446; /* Warm Taupe-Brown */
       margin-left: -1.25px;
     }
     
     .second {
       width: 1.5px;
-      height: 58px;
-      background: #ffffff; /* Crisp Creamy White accent */
+      height: 54px;
+      background: #ffffff; /* Cream White */
       margin-left: -0.75px;
       z-index: 6;
       box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
     }
 
-    /* Digital Time Inside Clock Dial */
+    /* Digital Time Below Clock */
     .digital {
-      position: absolute;
-      top: 65%; /* Positioned neatly in lower half of the dial */
-      left: 50%;
-      transform: translateX(-50%);
       color: #3b2426;
-      font-family: "Playfair Display", "Didot", "Georgia", serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      z-index: 4;
-      pointer-events: none;
-      white-space: nowrap;
-      opacity: 0.85;
+      font-family: "Lyon-Text", Georgia, YuMincho, "Yu Mincho", "Georgia Pro", Seravek, "Remington Pro", serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      background: rgba(255, 255, 255, 0.25);
+      padding: 5px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
   </style>
 </head>
@@ -144,12 +138,11 @@
       <div class="hand hour" id="hr"></div>
       <div class="hand minute" id="min"></div>
       <div class="hand second" id="sec"></div>
-      <div class="digital" id="digital"></div>
     </div>
+    <div class="digital" id="digital"></div>
   </div>
 
   <script>
-    // Generate 12 hour tick marks
     const ticksContainer = document.getElementById('ticks');
     for (let i = 0; i < 12; i++) {
       const tick = document.createElement('div');
