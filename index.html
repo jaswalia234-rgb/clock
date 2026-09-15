@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Google Font: Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
   <style>
     * {
       box-sizing: border-box;
@@ -13,13 +18,13 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: "Lyon-Text", Georgia, YuMincho, "Yu Mincho", "Georgia Pro", Seravek, "Remington Pro", serif;
+      font-family: "Playfair Display", Georgia, serif;
       overflow: hidden;
     }
     
-    /* Aesthetic Dirty Pink Glass Card */
+    /* Aesthetic Glass Card */
     .glass-card {
-      background: rgba(216, 164, 166, 0.75); /* Dirty Pink / Dusty Rose */
+      background: rgba(216, 164, 166, 0.75); /* Default Dusty Pink */
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.5);
@@ -32,7 +37,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px; /* Increased separation between clock and digital time */
+      gap: 22px;
     }
 
     /* Clock Face Container */
@@ -96,35 +101,36 @@
     .hour {
       width: 3.5px;
       height: 38px;
-      background: #4a3032; /* Deep Rosewood */
+      background: #4a3032;
       margin-left: -1.75px;
     }
     
     .minute {
       width: 2.5px;
       height: 54px;
-      background: #6e4446; /* Warm Taupe-Brown */
+      background: #6e4446;
       margin-left: -1.25px;
     }
     
     .second {
       width: 1.5px;
       height: 60px;
-      background: #ffffff; /* Cream White */
+      background: #ffffff;
       margin-left: -0.75px;
       z-index: 6;
       box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
     }
 
-    /* Larger Digital Time Below Clock */
+    /* Digital Time Display with Playfair Display */
     .digital {
       color: #3b2426;
-      font-family: "Lyon-Text", Georgia, YuMincho, "Yu Mincho", "Georgia Pro", Seravek, "Remington Pro", serif;
-      font-size: 18px; /* Enlarged text */
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 20px;
       font-weight: 600;
-      letter-spacing: 1px;
+      font-style: italic; /* Subtly slanted numbers for an editorial feel */
+      letter-spacing: 1.2px;
       background: rgba(255, 255, 255, 0.3);
-      padding: 6px 18px;
+      padding: 6px 20px;
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
@@ -142,6 +148,20 @@
   </div>
 
   <script>
+    // Read hex color code from URL parameter (?bg=hexcode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgParam = urlParams.get('bg');
+
+    if (bgParam) {
+      const hex = bgParam.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      document.querySelector('.glass-card').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
+    }
+
+    // Generate 12 hour tick marks
     const ticksContainer = document.getElementById('ticks');
     for (let i = 0; i < 12; i++) {
       const tick = document.createElement('div');
