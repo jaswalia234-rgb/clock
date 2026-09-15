@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Google Font: Cormorant Garamond -->
+  <!-- Google Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -18,32 +18,31 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
       overflow: hidden;
     }
     
-    /* Aesthetic Glass Card */
+    /* Compact Glass Card - No Drop Shadow */
     .glass-card {
       background: rgba(216, 164, 166, 0.75); /* Default Dirty Pink */
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-bottom: 1px solid rgba(138, 90, 93, 0.2);
       border-right: 1px solid rgba(138, 90, 93, 0.2);
-      border-radius: 28px;
-      padding: 24px 30px;
-      box-shadow: 0 12px 32px rgba(110, 68, 70, 0.15),
-                  0 2px 6px rgba(110, 68, 70, 0.08);
+      border-radius: 20px;
+      padding: 14px 18px; /* Compact padding */
+      box-shadow: none;   /* Removed drop shadow */
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px; /* Reduced gap between clock dial and digital time */
+      gap: 6px;           /* Tight spacing */
     }
 
-    /* Clock Face Container */
+    /* Scaled Down Clock Face */
     .clock {
-      width: 140px;
-      height: 140px;
+      width: 90px;
+      height: 90px;
       position: relative;
     }
 
@@ -57,20 +56,20 @@
     }
     .tick {
       position: absolute;
-      width: 2px;
-      height: 8px;
+      width: 1.5px;
+      height: 6px;
       background: rgba(74, 48, 50, 0.35);
       left: 50%;
       top: 0;
-      transform-origin: 50% 70px;
-      margin-left: -1px;
+      transform-origin: 50% 45px;
+      margin-left: -0.75px;
       border-radius: 1px;
     }
     .tick.major {
-      width: 2.5px;
-      height: 11px;
+      width: 2px;
+      height: 8px;
       background: rgba(74, 48, 50, 0.65);
-      margin-left: -1.25px;
+      margin-left: -1px;
     }
 
     /* Center Pin */
@@ -79,13 +78,12 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 7px;
-      height: 7px;
+      width: 5px;
+      height: 5px;
       background: #4a3032;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
 
     /* Hands */
@@ -94,43 +92,43 @@
       bottom: 50%;
       left: 50%;
       transform-origin: bottom center;
-      border-radius: 4px;
+      border-radius: 3px;
       z-index: 5;
     }
     
     .hour {
-      width: 3.5px;
-      height: 38px;
+      width: 3px;
+      height: 24px;
       background: #4a3032;
-      margin-left: -1.75px;
+      margin-left: -1.5px;
     }
     
     .minute {
-      width: 2.5px;
-      height: 54px;
+      width: 2px;
+      height: 34px;
       background: #6e4446;
-      margin-left: -1.25px;
+      margin-left: -1px;
     }
     
     .second {
-      width: 1.5px;
-      height: 60px;
+      width: 1px;
+      height: 38px;
       background: #ffffff;
-      margin-left: -0.75px;
+      margin-left: -0.5px;
       z-index: 6;
-      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
     }
 
-    /* Refined Compact Digital Time */
+    /* Smaller Digital Time Display */
     .digital {
       color: #3b2426;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 1.5px;
+      letter-spacing: 0.6px;
       background: rgba(255, 255, 255, 0.3);
-      padding: 4px 16px;
-      border-radius: 12px;
+      padding: 3px 10px;
+      border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
   </style>
