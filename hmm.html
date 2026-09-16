@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: transparent; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, sans-serif; overflow: hidden; }
+    .glass-card {
+      background: rgba(174, 205, 230, 0.75);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 3px solid rgba(255, 255, 255, 0.65);
+      border-bottom: 3px solid rgba(110, 145, 170, 0.35); border-right: 3px solid rgba(110, 145, 170, 0.35);
+      border-radius: 26px; padding: 18px 32px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .clock { width: 110px; height: 110px; position: relative; }
+    .ticks { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+    .tick { position: absolute; width: 1.5px; height: 7px; background: rgba(30, 50, 70, 0.45); left: 50%; top: 0; transform-origin: 50% 55px; margin-left: -0.75px; border-radius: 1px; }
+    .tick.major { width: 2px; height: 9px; background: #1e3246; margin-left: -1px; }
+    .clock::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #1e3246; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; }
+    .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 3px; z-index: 5; }
+    .hour { width: 3px; height: 30px; background: #1e3246; margin-left: -1.5px; }
+    .minute { width: 2px; height: 42px; background: #1e3246; margin-left: -1px; }
+    .second { width: 1.5px; height: 46px; background: #3a5874; margin-left: -0.75px; z-index: 6; }
+    .date-display { color: rgba(30, 50, 70, 0.75); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+    .digital { color: #1e3246; font-size: 15px; font-weight: 600; letter-spacing: 0.8px; }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="clock">
+      <div class="ticks" id="ticks"></div>
+      <div class="hand hour" id="hr"></div>
+      <div class="hand minute" id="min"></div>
+      <div class="hand second" id="sec"></div>
+    </div>
+    <div class="date-display" id="date">---</div>
+    <div class="digital" id="digital">--:--:--</div>
+  </div>
+  <script>
+    const ticksContainer = document.getElementById('ticks');
+    for (let i = 0; i < 12; i++) {
+      const tick = document.createElement('div');
+      tick.className = i % 3 === 0 ? 'tick major' : 'tick';
+      tick.style.transform = `rotate(${i * 30}deg)`;
+      ticksContainer.appendChild(tick);
+    }
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds(), ms = now.getMilliseconds();
+      document.getElementById('hr').style.transform = `rotate(${(h % 12) * 30 + m * 0.5 + (s / 120)}deg)`;
+      document.getElementById('min').style.transform = `rotate(${m * 6 + (s / 10)}deg)`;
+      document.getElementById('sec').style.transform = `rotate(${s * 6 + (ms * 0.006)}deg)`;
+      document.getElementById('date').innerText = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+      document.getElementById('digital').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      requestAnimationFrame(updateClock);
+    }
+    requestAnimationFrame(updateClock);
+  </script>
+</body>
+</html>
