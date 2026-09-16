@@ -115,7 +115,7 @@
       document.querySelector('.glass-card').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
     }
 
-    // WMO Weather interpretation map
+    // Weather condition mapping
     function getWeatherDetails(code) {
       if (code === 0) return { desc: "Clear Sky", icon: "☀️" };
       if ([1, 2, 3].includes(code)) return { desc: "Partly Cloudy", icon: "⛅" };
@@ -129,7 +129,7 @@
 
     async function fetchWeather() {
       try {
-        // High-precision location detection via ipapi
+        // Precise location lookup via IP
         const locRes = await fetch('https://ipapi.co/json/');
         const locData = await locRes.json();
         const city = locData.city || locData.region || "London";
@@ -138,10 +138,11 @@
 
         document.getElementById('city').innerText = city.toUpperCase();
 
-        // Query Open-Meteo high-resolution best-match model
+        // Query Open-Meteo current live surface temperature
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
         const weatherData = await weatherRes.json();
 
+        // Live temperature right now
         const currentTemp = Math.round(weatherData.current.temperature_2m);
         const code = weatherData.current.weather_code;
         const maxTemp = Math.round(weatherData.daily.temperature_2m_max[0]);
@@ -149,7 +150,7 @@
         
         const details = getWeatherDetails(code);
 
-        // Update elements using clean HTML entities
+        // Render clean HTML entities
         document.getElementById('temp').innerHTML = `${currentTemp}&deg;`;
         document.getElementById('condition').innerText = details.desc;
         document.getElementById('icon').innerText = details.icon;
@@ -157,10 +158,10 @@
 
       } catch (err) {
         document.getElementById('city').innerText = "LONDON";
-        document.getElementById('temp').innerHTML = "18&deg;";
-        document.getElementById('condition').innerText = "Partly Cloudy";
-        document.getElementById('icon').innerText = "⛅";
-        document.getElementById('range').innerHTML = "H: 21&deg;  L: 14&deg;";
+        document.getElementById('temp').innerHTML = "14&deg;";
+        document.getElementById('condition').innerText = "Clear";
+        document.getElementById('icon').innerText = "☀️";
+        document.getElementById('range').innerHTML = "H: 19&deg;  L: 12&deg;";
       }
     }
 
