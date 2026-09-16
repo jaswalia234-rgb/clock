@@ -61,7 +61,7 @@
       position: absolute;
       width: 1.5px;
       height: 7px;
-      background: rgba(45, 28, 22, 0.4);
+      background: rgba(45, 28, 22, 0.45);
       left: 50%;
       top: 0;
       transform-origin: 50% 55px;
@@ -71,7 +71,7 @@
     .tick.major {
       width: 2px;
       height: 9px;
-      background: rgba(45, 28, 22, 0.75);
+      background: #2d1c16;
       margin-left: -1px;
     }
 
@@ -102,29 +102,28 @@
     .hour {
       width: 3px;
       height: 30px;
-      background: #2d1c16; /* Deep Dark Espresso */
+      background: #2d1c16; /* Dark Espresso */
       margin-left: -1.5px;
     }
     
     .minute {
       width: 2px;
       height: 42px;
-      background: #4a3228; /* Warm Espresso */
+      background: #2d1c16; /* Dark Espresso */
       margin-left: -1px;
     }
     
     .second {
       width: 1.5px;
       height: 46px;
-      background: #ffffff; /* Crisp White Accent */
+      background: #4a3228; /* Warm Espresso Accent */
       margin-left: -0.75px;
       z-index: 6;
-      box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
     }
 
-    /* Floating Digital Time Display */
+    /* Floating Digital Time Display - Matching Theme Color */
     .digital {
-      color: #ffffff;
+      color: #2d1c16; /* Matching Dark Espresso */
       font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 16px;
       font-weight: 600;
@@ -133,7 +132,6 @@
       padding: 0;
       margin: 0;
       border: none;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
