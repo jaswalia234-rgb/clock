@@ -1,13 +1,128 @@
-async function fetchWeather() {
+a<!DOCTYPE html>
+<html>
+<head>
+  <!-- Google Font: Outfit (geometric fallback matching Proxima Nova) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+    
+    /* Exact Same Card Sizing & Bezel as Clock */
+    .glass-card {
+      background: rgba(174, 205, 230, 0.75); /* Dusty Blue */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 3px solid rgba(255, 255, 255, 0.75);
+      border-bottom: 3px solid rgba(110, 145, 170, 0.3);
+      border-right: 3px solid rgba(110, 145, 170, 0.3);
+      border-radius: 26px;
+      padding: 16px 20px;
+      width: 178px;
+      height: 182px;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    /* Location Name */
+    .location {
+      color: #3a546e;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Weather Icon & Main Temp Display */
+    .weather-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .weather-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .temp {
+      color: #1e3246;
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    /* Condition Description */
+    .condition {
+      color: #1e3246;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* High / Low Range */
+    .temp-range {
+      color: #3a546e;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="location" id="city">LOADING...</div>
+    <div class="weather-main">
+      <div class="weather-icon" id="icon">☀️</div>
+      <div class="temp" id="temp">--°</div>
+    </div>
+    <div class="condition" id="condition">Fetching Weather</div>
+    <div class="temp-range" id="range">H: --° L: --°</div>
+  </div>
+
+  <script>
+    // URL color override support (?bg=hexcode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgParam = urlParams.get('bg');
+
+    if (bgParam) {
+      const hex = bgParam.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      document.querySelector('.glass-card').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
+    }
+
+    // Fetch location and accurate live weather data via wttr.in
+    async function fetchWeather() {
       try {
-        // Fetch location details via IP
         const locRes = await fetch('https://ipapi.co/json/');
         const locData = await locRes.json();
         const city = locData.city || locData.region || "London";
 
         document.getElementById('city').innerText = city.toUpperCase();
 
-        // Fetch live weather data from wttr.in (uses local station observations)
         const weatherRes = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
         const weatherData = await weatherRes.json();
 
@@ -19,7 +134,6 @@ async function fetchWeather() {
         const maxTemp = todayForecast.maxtempC;
         const minTemp = todayForecast.mintempC;
 
-        // Map condition text to appropriate emoji
         let icon = "⛅";
         const descLower = conditionText.toLowerCase();
         if (descLower.includes("sun") || descLower.includes("clear")) icon = "☀️";
@@ -29,7 +143,6 @@ async function fetchWeather() {
         else if (descLower.includes("thunder")) icon = "⛈️";
         else if (descLower.includes("fog") || descLower.includes("mist")) icon = "🌫️";
 
-        // Update HTML elements
         document.getElementById('temp').innerText = `${tempC}°`;
         document.getElementById('condition').innerText = conditionText;
         document.getElementById('icon').innerText = icon;
@@ -45,3 +158,6 @@ async function fetchWeather() {
     }
 
     fetchWeather();
+  </script>
+</body>
+</html>
