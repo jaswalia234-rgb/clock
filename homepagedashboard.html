@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- Google Font: Playfair Display (Serif header font) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: "Playfair Display", Georgia, serif;
+      overflow: hidden;
+      padding: 10px;
+    }
+    
+    /* Wide Glassmorphism Header Card */
+    .glass-header {
+      background: rgba(174, 205, 230, 0.75); /* Matching Dusty Blue */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 3px solid rgba(255, 255, 255, 0.75);
+      border-bottom: 3px solid rgba(110, 145, 170, 0.3);
+      border-right: 3px solid rgba(110, 145, 170, 0.3);
+      border-radius: 40px; /* Scaled rounded pill corners */
+      width: 100%;
+      max-width: 2000px;
+      height: 100%;
+      max-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+    }
+
+    /* Lowercase Header Text */
+    .header-title {
+      color: #1e3246; /* Matching Dark Slate Blue Text */
+      font-size: clamp(28px, 5vw, 64px); /* Scales smoothly across screen sizes */
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      text-transform: lowercase;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-header">
+    <h1 class="header-title">homepage dashboard</h1>
+  </div>
+
+  <script>
+    // URL color override support (?bg=hexcode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgParam = urlParams.get('bg');
+
+    if (bgParam) {
+      const hex = bgParam.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      document.querySelector('.glass-header').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
+    }
+  </script>
+</body>
+</html>
