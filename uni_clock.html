@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Google Font: Outfit (geometric sans-serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+    
+    /* Glass Card - Aesthetic Muted Brown (#7B5E51) */
+    .glass-card {
+      background: rgba(123, 94, 81, 0.75); /* Muted Brown / Warm Chocolate */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      
+      /* Two-Toned Glass Bezel */
+      border: 3px solid rgba(255, 255, 255, 0.65); /* Top-left highlight */
+      border-bottom: 3px solid rgba(60, 40, 32, 0.35); /* Bottom-right shadow */
+      border-right: 3px solid rgba(60, 40, 32, 0.35);
+      
+      border-radius: 26px;
+      padding: 16px 32px;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Scaled Clock Face (110px) */
+    .clock {
+      width: 110px;
+      height: 110px;
+      position: relative;
+    }
+
+    /* Hour Tick Lines */
+    .ticks {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    .tick {
+      position: absolute;
+      width: 1.5px;
+      height: 7px;
+      background: rgba(45, 28, 22, 0.4);
+      left: 50%;
+      top: 0;
+      transform-origin: 50% 55px;
+      margin-left: -0.75px;
+      border-radius: 1px;
+    }
+    .tick.major {
+      width: 2px;
+      height: 9px;
+      background: rgba(45, 28, 22, 0.75);
+      margin-left: -1px;
+    }
+
+    /* Center Pin */
+    .clock::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      background: #2d1c16;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    /* Hands */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 3px;
+      z-index: 5;
+    }
+    
+    .hour {
+      width: 3px;
+      height: 30px;
+      background: #2d1c16; /* Deep Dark Espresso */
+      margin-left: -1.5px;
+    }
+    
+    .minute {
+      width: 2px;
+      height: 42px;
+      background: #4a3228; /* Warm Espresso */
+      margin-left: -1px;
+    }
+    
+    .second {
+      width: 1.5px;
+      height: 46px;
+      background: #ffffff; /* Crisp White Accent */
+      margin-left: -0.75px;
+      z-index: 6;
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+    }
+
+    /* Floating Digital Time Display */
+    .digital {
+      color: #ffffff;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      border: none;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="clock">
+      <div class="ticks" id="ticks"></div>
+      <div class="hand hour" id="hr"></div>
+      <div class="hand minute" id="min"></div>
+      <div class="hand second" id="sec"></div>
+    </div>
+    <div class="digital" id="digital"></div>
+  </div>
+
+  <script>
+    // Read hex color code from URL parameter (?bg=hexcode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgParam = urlParams.get('bg');
+
+    if (bgParam) {
+      const hex = bgParam.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      document.querySelector('.glass-card').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
+    }
+
+    // Generate 12 hour tick marks
+    const ticksContainer = document.getElementById('ticks');
+    for (let i = 0; i < 12; i++) {
+      const tick = document.createElement('div');
+      tick.className = i % 3 === 0 ? 'tick major' : 'tick';
+      tick.style.transform = `rotate(${i * 30}deg)`;
+      ticksContainer.appendChild(tick);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+      const ms = now.getMilliseconds();
+      
+      const hrDeg = (h % 12) * 30 + m * 0.5 + (s / 120);
+      const minDeg = m * 6 + (s / 10);
+      const secDeg = s * 6 + (ms * 0.006);
+      
+      document.getElementById('hr').style.transform = `rotate(${hrDeg}deg)`;
+      document.getElementById('min').style.transform = `rotate(${minDeg}deg)`;
+      document.getElementById('sec').style.transform = `rotate(${secDeg}deg)`;
+      
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('digital').innerText = timeString;
+      
+      requestAnimationFrame(updateClock);
+    }
+    
+    requestAnimationFrame(updateClock);
+  </script>
+</body>
+</html>
