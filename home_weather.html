@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Google Font: Outfit (geometric fallback matching Proxima Nova) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+    
+    /* Glass Card - Dusty Blue (#AECDE6) */
+    .glass-card {
+      background: rgba(174, 205, 230, 0.75); /* Dusty Blue */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 3px solid rgba(255, 255, 255, 0.75);
+      border-bottom: 3px solid rgba(110, 145, 170, 0.3);
+      border-right: 3px solid rgba(110, 145, 170, 0.3);
+      border-radius: 26px;
+      padding: 16px 28px;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 170px;
+    }
+
+    /* Location Name */
+    .location {
+      color: #3a546e;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Main Weather Icon & Temp Display */
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0;
+    }
+
+    .weather-icon {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .temp {
+      color: #1e3246;
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    /* Weather Condition Description */
+    .condition {
+      color: #1e3246;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+
+    /* High / Low Range */
+    .temp-range {
+      color: #3a546e;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="location" id="city">LOADING...</div>
+    <div class="weather-main">
+      <div class="weather-icon" id="icon">☀️</div>
+      <div class="temp" id="temp">--°</div>
+    </div>
+    <div class="condition" id="condition">Fetching Weather</div>
+    <div class="temp-range" id="range">H: --° L: --°</div>
+  </div>
+
+  <script>
+    // URL color override support (?bg=hexcode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgParam = urlParams.get('bg');
+
+    if (bgParam) {
+      const hex = bgParam.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      document.querySelector('.glass-card').style.background = `rgba(${r}, ${g}, ${b}, 0.75)`;
+    }
+
+    // Weather condition map (WMO codes)
+    function getWeatherDetails(code) {
+      if (code === 0) return { desc: "Clear Sky", icon: "☀️" };
+      if ([1, 2, 3].includes(code)) return { desc: "Partly Cloudy", icon: "⛅" };
+      if ([45, 48].includes(code)) return { desc: "Foggy", icon: "🌫️" };
+      if ([51, 53, 55, 61, 63, 65].includes(code)) return { desc: "Rainy", icon: "🌧️" };
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return { desc: "Snow", icon: "❄️" };
+      if ([80, 81, 82].includes(code)) return { desc: "Showers", icon: "🌦️" };
+      if ([95, 96, 99].includes(code)) return { desc: "Thunderstorm", icon: "⛈️" };
+      return { desc: "Clear", icon: "🌤️" };
+    }
+
+    // Fetch location and live weather data
+    async function fetchWeather() {
+      try {
+        // Step 1: Get user location via IP
+        const locRes = await fetch('https://ipapi.co/json/');
+        const locData = await locRes.json();
+        const city = locData.city || locData.region || "Local";
+        const lat = locData.latitude || 51.5074;
+        const lon = locData.longitude || -0.1278;
+
+        document.getElementById('city').innerText = city;
+
+        // Step 2: Fetch current weather from Open-Meteo
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+        const weatherData = await weatherRes.json();
+
+        const current = weatherData.current_weather;
+        const daily = weatherData.daily;
+        const details = getWeatherDetails(current.weathercode);
+
+        document.getElementById('temp').innerText = `${Math.round(current.temperature)}°`;
+        document.getElementById('condition').innerText = details.desc;
+        document.getElementById('icon').innerText = details.icon;
+        document.getElementById('range').innerText = `H: ${Math.round(daily.temperature_2m_max[0])}°  L: ${Math.round(daily.temperature_2m_min[0])}°`;
+
+      } catch (err) {
+        document.getElementById('city').innerText = "LONDON";
+        document.getElementById('temp').innerText = "18°";
+        document.getElementById('condition').innerText = "Partly Cloudy";
+        document.getElementById('icon').innerText = "⛅";
+        document.getElementById('range').innerText = "H: 21° L: 14°";
+      }
+    }
+
+    fetchWeather();
+  </script>
+</body>
+</html>
