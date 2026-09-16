@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- Google Font: Outfit (fallback matching Proxima Nova / Sans-Serif style) -->
+  <!-- Google Font: Outfit (Proxima Nova / Sans-Serif style) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -23,15 +23,18 @@
       overflow: hidden;
     }
     
-    /* Dusty Blue Glass Banner (3000px x 100px aspect ratio container) */
+    /* Dusty Blue Glass Banner with Two-Toned Glass Bezel */
     .banner-card {
-      background: rgba(174, 205, 230, 0.75); /* Dusty Blue */
+      background: rgba(174, 205, 230, 0.75); /* Dusty Blue #AECDE6 */
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      border: 3px solid rgba(255, 255, 255, 0.75);
-      border-bottom: 3px solid rgba(110, 145, 170, 0.3);
-      border-right: 3px solid rgba(110, 145, 170, 0.3);
-      border-radius: 26px; /* Matching rounded corners as clock card */
+      
+      /* Two-Toned Glass Bezel Border */
+      border: 3px solid rgba(255, 255, 255, 0.75); /* Top-left light highlight */
+      border-bottom: 3px solid rgba(110, 145, 170, 0.35); /* Bottom-right dark shadow */
+      border-right: 3px solid rgba(110, 145, 170, 0.35);
+      
+      border-radius: 26px; /* Matching rounded corners as clock */
       
       width: 100%;
       max-width: 3000px;
@@ -44,13 +47,13 @@
       padding: 0 32px;
     }
 
-    /* Lowercase Dashboard Title matching image typography */
+    /* Lowercase Title Matching Typography */
     .banner-title {
-      color: #1e3246; /* Matching dark slate text color from blue clock */
-      font-family: "Playfair Display", "proxima-nova", "Proxima Nova", Georgia, serif;
-      font-size: 38px;
-      font-weight: 400;
-      letter-spacing: -0.5px;
+      color: #1e3246; /* Dark Slate */
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
       text-transform: lowercase;
       text-align: center;
       white-space: nowrap;
@@ -63,7 +66,7 @@
   </div>
 
   <script>
-    // URL color override support (?bg=hexcode)
+    // URL parameter support for dynamic hex colors (?bg=hexcode)
     const urlParams = new URLSearchParams(window.location.search);
     const bgParam = urlParams.get('bg');
 
