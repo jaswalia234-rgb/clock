@@ -46,38 +46,66 @@
       return { desc: "Clear", icon: "🌤️" };
     }
 
-    // Step 1: Receives dynamic IP location data via JSONP (bypasses CORS/iframe security)
-    function handleLocation(data) {
-      if (data && data.status === 'success') {
-        const city = data.city || data.regionName || "LOCAL";
-        fetchWeather(data.lat, data.lon, city);
-      } else {
-        document.getElementById('city').innerText = "LOCATION BLOCKED";
-      }
-    }
-
-    // Step 2: Fetches live weather for the dynamically detected location
-    async function fetchWeather(lat, lon, cityName) {
+    async function loadWeatherForCoords(lat, lon, explicitCity = null) {
       try {
+        let cityName = explicitCity;
+
+        // If no explicit city name was passed, use OpenStreetMap's Nominatim reverse geocoder
+        if (!cityName) {
+          try {
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`);
+            const geoData = await geoRes.json();
+            const addr = geoData.address || {};
+            // Priorities: suburb/neighbourhood (e.g. Borough) > town (e.g. Maidenhead) > city
+            cityName = addr.suburb || addr.neighbourhood || addr.quarter || addr.town || addr.city || addr.district || "LOCAL";
+          } catch (e) {
+            cityName = "LOCAL";
+          }
+        }
+
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
         const weatherData = await res.json();
-        
+
         document.getElementById('city').innerText = cityName.toUpperCase();
         document.getElementById('temp').innerHTML = `${Math.round(weatherData.current.temperature_2m)}&deg;`;
         const details = getWeatherDetails(weatherData.current.weather_code);
         document.getElementById('condition').innerText = details.desc;
         document.getElementById('icon').innerText = details.icon;
         document.getElementById('range').innerHTML = `H: ${Math.round(weatherData.daily.temperature_2m_max[0])}&deg;  L: ${Math.round(weatherData.daily.temperature_2m_min[0])}&deg;`;
-      } catch (e) {
-        document.getElementById('city').innerText = cityName.toUpperCase();
-        document.getElementById('condition').innerText = "Offline";
+      } catch (err) {
+        document.getElementById('city').innerText = "OFFLINE";
       }
     }
 
-    // Inject JSONP script tag for location resolution
-    const script = document.createElement('script');
-    script.src = 'https://ip-api.com/json/?callback=handleLocation';
-    document.body.appendChild(script);
+    // Attempt HTML5 geolocation first
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          loadWeatherForCoords(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          // If browser/Notion blocks direct GPS, fall back to JSONP IP lookup
+          fallbackIPLookup();
+        },
+        { enableHighAccuracy: true, timeout: 4000 }
+      );
+    } else {
+      fallbackIPLookup();
+    }
+
+    function fallbackIPLookup() {
+      window.handleLocation = function(data) {
+        if (data && data.status === 'success') {
+          // Use exact coordinates from IP and run through OpenStreetMap for neighborhood lookup
+          loadWeatherForCoords(data.lat, data.lon, data.city);
+        } else {
+          document.getElementById('city').innerText = "LOCATION BLOCKED";
+        }
+      };
+      const script = document.createElement('script');
+      script.src = 'https://ip-api.com/json/?callback=handleLocation';
+      document.body.appendChild(script);
+    }
   </script>
 </body>
 </html>
