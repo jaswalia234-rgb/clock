@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Widget</title>
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Pastel Butter Yellow Glassmorphism Card */
+    .glass-card {
+      background: rgba(253, 241, 169, 0.85); /* Pastel Butter Yellow */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      
+      /* Two-Toned Glass Bezel Border */
+      border: 3px solid rgba(255, 255, 255, 0.75);
+      border-bottom: 3px solid rgba(160, 140, 70, 0.35);
+      border-right: 3px solid rgba(160, 140, 70, 0.35);
+      
+      border-radius: 26px;
+      padding: 16px 20px;
+      width: 178px;
+      height: 182px;
+      
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .location {
+      color: rgba(74, 62, 27, 0.85);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .weather-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .temp {
+      color: #4a3e1b;
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .condition {
+      color: #4a3e1b;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .temp-range {
+      color: rgba(74, 62, 27, 0.85);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glass-card">
+    <div class="location" id="city">LOCATING...</div>
+    <div class="weather-main">
+      <div class="weather-icon" id="icon">🌤️</div>
+      <div class="temp" id="temp">--&deg;</div>
+    </div>
+    <div class="condition" id="condition">Loading...</div>
+    <div class="temp-range" id="range">H: --&deg; L: --&deg;</div>
+  </div>
+
+  <script>
+    // Weather Code to Icon & Text Mapping
+    function getWeatherDetails(code) {
+      if (code === 0) return { desc: "Clear Sky", icon: "☀️" };
+      if ([1, 2, 3].includes(code)) return { desc: "Partly Cloudy", icon: "⛅" };
+      if ([45, 48].includes(code)) return { desc: "Foggy", icon: "🌫️" };
+      if ([51, 53, 55, 61, 63, 65].includes(code)) return { desc: "Rainy", icon: "🌧️" };
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return { desc: "Snow", icon: "❄️" };
+      if ([80, 81, 82].includes(code)) return { desc: "Showers", icon: "🌦️" };
+      if ([95, 96, 99].includes(code)) return { desc: "Thunderstorm", icon: "⛈️" };
+      return { desc: "Clear", icon: "🌤️" };
+    }
+
+    // Render Weather Data to DOM
+    async function renderWeather(lat, lon, cityName) {
+      try {
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+        const weatherData = await weatherRes.json();
+
+        document.getElementById('city').innerText = cityName.toUpperCase();
+        document.getElementById('temp').innerHTML = `${Math.round(weatherData.current.temperature_2m)}&deg;`;
+        
+        const details = getWeatherDetails(weatherData.current.weather_code);
+        document.getElementById('condition').innerText = details.desc;
+        document.getElementById('icon').innerText = details.icon;
+        document.getElementById('range').innerHTML = `H: ${Math.round(weatherData.daily.temperature_2m_max[0])}&deg;  L: ${Math.round(weatherData.daily.temperature_2m_min[0])}&deg;`;
+      } catch (e) {
+        document.getElementById('city').innerText = "OFFLINE";
+      }
+    }
+
+    // Accurate Network Location Fallback
+    async function fallbackIP() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        const city = data.city || data.region || "LOCAL";
+        renderWeather(data.latitude, data.longitude, city);
+      } catch (e) {
+        document.getElementById('city').innerText = "ERROR";
+      }
+    }
+
+    // Execution Logic: Tries GPS first (with strict 1.8s timeout), falls back to network API for Notion
+    function init() {
+      if (navigator.geolocation) {
+        let resolved = false;
+
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            resolved = true;
+            try {
+              const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&zoom=14`);
+              const geoData = await geoRes.json();
+              const addr = geoData.address || {};
+              const town = addr.suburb || addr.neighbourhood || addr.town || addr.city || "LOCAL";
+              renderWeather(pos.coords.latitude, pos.coords.longitude, town);
+            } catch (e) {
+              renderWeather(pos.coords.latitude, pos.coords.longitude, "LOCAL");
+            }
+          },
+          () => {
+            resolved = true;
+            fallbackIP();
+          },
+          { enableHighAccuracy: true, timeout: 1800 }
+        );
+
+        // Timer catch in case Notion blocks the callback completely
+        setTimeout(() => {
+          if (!resolved) {
+            fallbackIP();
+          }
+        }, 2000);
+      } else {
+        fallbackIP();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
