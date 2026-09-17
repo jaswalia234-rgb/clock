@@ -47,7 +47,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-around;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      box-shadow: none; /* Shadow removed */
     }
 
     .location {
@@ -154,7 +154,7 @@
       }
     }
 
-    // Execution Logic: Tries GPS first (with strict 1.8s timeout), falls back to network API for Notion
+    // Execution Logic
     function init() {
       if (navigator.geolocation) {
         let resolved = false;
@@ -179,7 +179,6 @@
           { enableHighAccuracy: true, timeout: 1800 }
         );
 
-        // Timer catch in case Notion blocks the callback completely
         setTimeout(() => {
           if (!resolved) {
             fallbackIP();
