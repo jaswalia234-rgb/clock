@@ -46,66 +46,34 @@
       return { desc: "Clear", icon: "🌤️" };
     }
 
-    async function loadWeatherForCoords(lat, lon, explicitCity = null) {
+    async function initWeather() {
       try {
-        let cityName = explicitCity;
+        // Direct IP location resolution
+        const locRes = await fetch('https://ipapi.co/json/');
+        const locData = await locRes.json();
+        
+        const lat = locData.latitude;
+        const lon = locData.longitude;
+        const city = locData.city || locData.region || "LOCAL";
 
-        // If no explicit city name was passed, use OpenStreetMap's Nominatim reverse geocoder
-        if (!cityName) {
-          try {
-            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`);
-            const geoData = await geoRes.json();
-            const addr = geoData.address || {};
-            // Priorities: suburb/neighbourhood (e.g. Borough) > town (e.g. Maidenhead) > city
-            cityName = addr.suburb || addr.neighbourhood || addr.quarter || addr.town || addr.city || addr.district || "LOCAL";
-          } catch (e) {
-            cityName = "LOCAL";
-          }
-        }
+        // Fetch weather for detected coordinates
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+        const weatherData = await weatherRes.json();
 
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
-        const weatherData = await res.json();
-
-        document.getElementById('city').innerText = cityName.toUpperCase();
+        document.getElementById('city').innerText = city.toUpperCase();
         document.getElementById('temp').innerHTML = `${Math.round(weatherData.current.temperature_2m)}&deg;`;
         const details = getWeatherDetails(weatherData.current.weather_code);
         document.getElementById('condition').innerText = details.desc;
         document.getElementById('icon').innerText = details.icon;
         document.getElementById('range').innerHTML = `H: ${Math.round(weatherData.daily.temperature_2m_max[0])}&deg;  L: ${Math.round(weatherData.daily.temperature_2m_min[0])}&deg;`;
       } catch (err) {
-        document.getElementById('city').innerText = "OFFLINE";
+        // Fallback if IP API is blocked
+        document.getElementById('city').innerText = "MAIDENHEAD";
+        document.getElementById('condition').innerText = "Offline";
       }
     }
 
-    // Attempt HTML5 geolocation first
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          loadWeatherForCoords(pos.coords.latitude, pos.coords.longitude);
-        },
-        () => {
-          // If browser/Notion blocks direct GPS, fall back to JSONP IP lookup
-          fallbackIPLookup();
-        },
-        { enableHighAccuracy: true, timeout: 4000 }
-      );
-    } else {
-      fallbackIPLookup();
-    }
-
-    function fallbackIPLookup() {
-      window.handleLocation = function(data) {
-        if (data && data.status === 'success') {
-          // Use exact coordinates from IP and run through OpenStreetMap for neighborhood lookup
-          loadWeatherForCoords(data.lat, data.lon, data.city);
-        } else {
-          document.getElementById('city').innerText = "LOCATION BLOCKED";
-        }
-      };
-      const script = document.createElement('script');
-      script.src = 'https://ip-api.com/json/?callback=handleLocation';
-      document.body.appendChild(script);
-    }
+    initWeather();
   </script>
 </body>
 </html>
