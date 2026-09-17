@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: transparent; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: "proxima-nova", "Proxima Nova", "Outfit", -apple-system, sans-serif; overflow: hidden; }
+    .glass-card {
+      background: rgba(253, 241, 169, 0.85); /* Pastel Butter Yellow */
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 3px solid rgba(255, 255, 255, 0.75);
+      border-bottom: 3px solid rgba(160, 140, 70, 0.35); border-right: 3px solid rgba(160, 140, 70, 0.35);
+      border-radius: 26px; padding: 16px 20px; width: 178px; height: 182px; display: flex; flex-direction: column; align-items: center; justify-content: space-around;
+    }
+    .location { color: rgba(74, 62, 27, 0.85); font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+    .weather-main { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .weather-icon { font-size: 34px; line-height: 1; }
+    .temp { color: #4a3e1b; font-size: 36px; font-weight: 600; letter-spacing: -0.5px; }
+    .condition { color: #4a3e1b; font-size: 15px; font-weight: 600; letter-spacing: 0.4px; text-align: center; white-space: nowrap; }
+    .temp-range { color: rgba(74, 62, 27, 0.85); font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="location" id="city">LOCATING...</div>
+    <div class="weather-main">
+      <div class="weather-icon" id="icon">☀️</div>
+      <div class="temp" id="temp">--&deg;</div>
+    </div>
+    <div class="condition" id="condition">Fetching Weather</div>
+    <div class="temp-range" id="range">H: --&deg; L: --&deg;</div>
+  </div>
+  <script>
+    function getWeatherDetails(code) {
+      if (code === 0) return { desc: "Clear Sky", icon: "☀️" };
+      if ([1, 2, 3].includes(code)) return { desc: "Partly Cloudy", icon: "⛅" };
+      if ([45, 48].includes(code)) return { desc: "Foggy", icon: "🌫️" };
+      if ([51, 53, 55, 61, 63, 65].includes(code)) return { desc: "Rainy", icon: "🌧️" };
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return { desc: "Snow", icon: "❄️" };
+      if ([80, 81, 82].includes(code)) return { desc: "Showers", icon: "🌦️" };
+      if ([95, 96, 99].includes(code)) return { desc: "Thunderstorm", icon: "⛈️" };
+      return { desc: "Clear", icon: "🌤️" };
+    }
+
+    async function loadWeatherData(lat, lon, fallbackCity = "") {
+      try {
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+        const weatherData = await weatherRes.json();
+        
+        // Reverse Geocode to get City Name
+        if (!fallbackCity) {
+          try {
+            const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+            const geoData = await geoRes.json();
+            fallbackCity = geoData.city || geoData.locality || geoData.principalSubdivision || "LOCAL";
+          } catch(e) {
+            fallbackCity = "LOCAL";
+          }
+        }
+
+        document.getElementById('city').innerText = fallbackCity.toUpperCase();
+        document.getElementById('temp').innerHTML = `${Math.round(weatherData.current.temperature_2m)}&deg;`;
+        const details = getWeatherDetails(weatherData.current.weather_code);
+        document.getElementById('condition').innerText = details.desc;
+        document.getElementById('icon').innerText = details.icon;
+        document.getElementById('range').innerHTML = `H: ${Math.round(weatherData.daily.temperature_2m_max[0])}&deg;  L: ${Math.round(weatherData.daily.temperature_2m_min[0])}&deg;`;
+      } catch (err) {
+        document.getElementById('city').innerText = "ERROR";
+      }
+    }
+
+    function initWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => loadWeatherData(pos.coords.latitude, pos.coords.longitude),
+          () => fetchByIP(),
+          { timeout: 5000 }
+        );
+      } else {
+        fetchByIP();
+      }
+    }
+
+    async function fetchByIP() {
+      try {
+        const res = await fetch('https://wttr.in/?format=j1');
+        const data = await res.json();
+        const area = data.nearest_area[0];
+        const lat = area.latitude;
+        const lon = area.longitude;
+        const city = area.areaName[0].value;
+        loadWeatherData(lat, lon, city);
+      } catch (e) {
+        loadWeatherData(51.5074, -0.1278, "London");
+      }
+    }
+
+    initWeather();
+  </script>
+</body>
+</html>
