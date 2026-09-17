@@ -46,34 +46,44 @@
       return { desc: "Clear", icon: "🌤️" };
     }
 
-    async function initWeather() {
+    async function fetchWeatherForCoords(lat, lon) {
       try {
-        // Direct IP location resolution
-        const locRes = await fetch('https://ipapi.co/json/');
-        const locData = await locRes.json();
-        
-        const lat = locData.latitude;
-        const lon = locData.longitude;
-        const city = locData.city || locData.region || "LOCAL";
+        // Reverse geocode exact coordinates via OpenStreetMap Nominatim
+        const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`);
+        const geoData = await geoRes.json();
+        const addr = geoData.address || {};
+        const cityName = addr.suburb || addr.neighbourhood || addr.quarter || addr.town || addr.city || "LOCAL";
 
-        // Fetch weather for detected coordinates
+        // Fetch live weather from Open-Meteo
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
         const weatherData = await weatherRes.json();
 
-        document.getElementById('city').innerText = city.toUpperCase();
+        document.getElementById('city').innerText = cityName.toUpperCase();
         document.getElementById('temp').innerHTML = `${Math.round(weatherData.current.temperature_2m)}&deg;`;
         const details = getWeatherDetails(weatherData.current.weather_code);
         document.getElementById('condition').innerText = details.desc;
         document.getElementById('icon').innerText = details.icon;
         document.getElementById('range').innerHTML = `H: ${Math.round(weatherData.daily.temperature_2m_max[0])}&deg;  L: ${Math.round(weatherData.daily.temperature_2m_min[0])}&deg;`;
-      } catch (err) {
-        // Fallback if IP API is blocked
-        document.getElementById('city').innerText = "MAIDENHEAD";
-        document.getElementById('condition').innerText = "Offline";
+      } catch (e) {
+        document.getElementById('city').innerText = "ERROR";
       }
     }
 
-    initWeather();
+    // Request direct GPS location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchWeatherForCoords(pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+          document.getElementById('city').innerText = "ALLOW GPS";
+          document.getElementById('condition').innerText = "Location Blocked";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      document.getElementById('city').innerText = "NO GPS";
+    }
   </script>
 </body>
 </html>
